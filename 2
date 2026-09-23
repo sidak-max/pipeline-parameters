@@ -1,0 +1,72 @@
+bsequent updates, you can use:
+
+git add .
+git commit -m "Add appointment validation"
+git push
+
+Your pushed commits will now be available in OneDev for Charchit to review.
+
+Phase 7 — Create a pull request
+Step 10. Submit your completed work
+
+Once your feature is ready for review:
+
+Open OneDev in your browser.
+
+Open the MediBridge project.
+
+Click Pull Requests.
+
+Click New Pull Request.
+
+Select the following branches:
+
+Source branch
+
+Your work
+
+feature/appointment-booking
+
+Target branch
+
+Integration
+
+main
+
+Enter a title such as Implement appointment booking module.
+
+Describe what you implemented and how you tested it.
+
+Submit the pull request and notify Charchit.
+
+Charchit will review your changes and merge them into main when they are ready.
+
+Phase 8 — Keep your branch updated
+
+When Charchit merges changes into main, you may need to update your local branch.
+
+First, commit or otherwise safely preserve your unfinished work. Then run:
+
+git fetch origin
+git switch main
+git pull origin main
+git switch feature/appointment-booking
+git merge main
+
+Resolve any merge conflicts if Git reports them, test your code, and push your updated feature branch.
+
+Final checklist for Shivendra
+
+0 of 9 completed
+
+Git installed and verified
+Java 17 installed and verified
+VS Code and Java extensions installed
+OneDev account created and repository access granted
+MediBridge cloned successfully
+feature/appointment-booking checked out
+Appointment booking issue reviewed
+Code committed and pushed to OneDev
+Pull request submitted to main
+
+Expected result: Shivendra will have a working local copy of MediBridge, his own OneDev account, and a local branch connected to feature/appointment-booking. He can develop independently, push commits to OneDev, and submit a pull request to Charchit's main branch for review.
