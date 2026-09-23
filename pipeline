@@ -1,0 +1,488 @@
+What is included?
+
+This script contains:
+
+Checkout
+Install Dependencies
+Run Unit Tests
+Windows bat commands
+post block for success/failure
+Where to include it?
+
+Create a file named:
+
+Jenkinsfile
+
+Put it in the root folder of your GitHub repository, alongside:
+
+app.py
+test_app.py
+requirements.txt
+Jenkinsfile
+Pipeline Script
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                bat 'python -m pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                bat 'python -m pytest'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'BUILD SUCCESS: All tests passed successfully.'
+        }
+
+        failure {
+            echo 'BUILD FAILED: One or more tests failed.'
+        }
+    }
+}
+Question 2 — Jenkinsfile
+What is included?
+
+This script contains:
+
+Checkout
+Install Dependencies
+Run Unit Tests (verbose)
+pytest -v
+
+The parameterized tests themselves go in test_app.py, not in this Jenkinsfile. The question specifically requires pytest -v.
+
+Where to include it?
+
+Create/replace:
+
+Jenkinsfile
+
+in the root of your GitHub repository.
+
+Pipeline Script
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                bat 'python -m pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Unit Tests (verbose)') {
+            steps {
+                bat 'python -m pytest -v'
+            }
+        }
+    }
+}
+Question 3 — Jenkinsfile
+What is included?
+
+This script contains:
+
+Checkout
+Build
+py_compile compilation check
+APP_NAME
+APP_VERSION
+Deploy
+input approval
+Release button
+Runs app.py after approval
+
+The question requires the Deploy stage to pause for approval and demonstrate both Release and Abort outcomes.
+
+Where to include it?
+
+Create:
+
+Jenkinsfile
+
+in the root of your GitHub repository.
+
+Pipeline Script
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'MyApplication'
+        APP_VERSION = '1.0'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'python -m py_compile app.py'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                input(
+                    message: "Approve deployment of ${APP_NAME} version ${APP_VERSION}?",
+                    ok: 'Release'
+                )
+
+                bat 'python app.py'
+            }
+        }
+    }
+}
+Important
+
+The message displayed in Jenkins will become:
+
+Approve deployment of MyApplication version 1.0?
+
+Click:
+
+Release
+
+to continue.
+
+If you click:
+
+Abort
+
+the Deploy stage/build is aborted and:
+
+python app.py
+
+does not run.
+
+Question 4 — Jenkinsfile
+What is included?
+
+This script contains:
+
+Checkout
+Show Build Info
+BUILD_NUMBER
+JOB_NAME
+WORKSPACE
+Run Linter
+flake8
+
+The greet(name) function belongs in app.py; the Jenkinsfile only runs the linter.
+
+Where to include it?
+
+Create:
+
+Jenkinsfile
+
+in your GitHub repository root.
+
+Pipeline Script
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Show Build Info') {
+            steps {
+                echo "BUILD_NUMBER = ${env.BUILD_NUMBER}"
+                echo "JOB_NAME = ${env.JOB_NAME}"
+                echo "WORKSPACE = ${env.WORKSPACE}"
+            }
+        }
+
+        stage('Run Linter') {
+            steps {
+                bat 'python -m flake8 app.py'
+            }
+        }
+    }
+}
+For the linter
+
+Your requirements.txt should contain:
+
+pytest
+flake8
+Question 5 — Jenkinsfile
+What is included?
+
+This script contains:
+
+ENVIRONMENT choice parameter
+dev
+staging
+prod
+RUN_EXTRA_CHECK checkbox
+Checkout
+Show Parameter
+Extra Check
+when directive
+
+This matches the parameterized pipeline requirements in the question.
+
+Where to include it?
+
+Create:
+
+Jenkinsfile
+
+in the root of your GitHub repository.
+
+Pipeline Script
+pipeline {
+    agent any
+
+    parameters {
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['dev', 'staging', 'prod'],
+            description: 'Select the deployment environment'
+        )
+
+        booleanParam(
+            name: 'RUN_EXTRA_CHECK',
+            defaultValue: false,
+            description: 'Run the extra check'
+        )
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Show Parameter') {
+            steps {
+                echo "Selected Environment: ${params.ENVIRONMENT}"
+            }
+        }
+
+        stage('Extra Check') {
+            when {
+                expression {
+                    params.RUN_EXTRA_CHECK == true
+                }
+            }
+
+            steps {
+                echo "Extra Check is running..."
+                bat 'python --version'
+            }
+        }
+    }
+}
+Important
+
+For the first build, Jenkins may show only:
+
+Build Now
+
+After Jenkins has processed the Jenkinsfile containing the parameters, the job will provide:
+
+Build with Parameters
+
+Then you can select:
+
+ENVIRONMENT:
+    dev
+    staging
+    prod
+
+RUN_EXTRA_CHECK:
+    ☑ / ☐
+Question 6 — Jenkinsfile
+What is included?
+
+This script contains:
+
+Checkout
+Parallel Checks
+parallel
+frontend_check.py
+backend_check.py
+Archive Reports
+archiveArtifacts
+Both report files
+
+The question specifically asks for the two scripts to run side-by-side and both reports to be archived.
+
+Where to include it?
+
+Create:
+
+Jenkinsfile
+
+in your GitHub repository root.
+
+Your repository should contain:
+
+Jenkinsfile
+frontend_check.py
+backend_check.py
+Pipeline Script
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Parallel Checks') {
+            parallel {
+
+                stage('Frontend Check') {
+                    steps {
+                        bat 'python frontend_check.py'
+                    }
+                }
+
+                stage('Backend Check') {
+                    steps {
+                        bat 'python backend_check.py'
+                    }
+                }
+            }
+        }
+
+        stage('Archive Reports') {
+            steps {
+                archiveArtifacts artifacts: 'frontend_report.txt,backend_report.txt',
+                                 fingerprint: true
+            }
+        }
+    }
+}
+Expected timing
+
+Each Python script sleeps for:
+
+4 seconds
+
+Because they run parallel, the Parallel Checks stage should take roughly:
+
+4 seconds + small Jenkins overhead
+
+instead of approximately:
+
+4 + 4 = 8 seconds
+
+when run sequentially.
+
+Question 7 — Jenkinsfile
+What is included?
+
+This script contains:
+
+Checkout
+Build
+py_compile
+15-second wait
+milestone(1)
+Send Notification
+mail step
+
+The question allows an echo workaround if SMTP isn't configured.
+
+Where to include it?
+
+Create:
+
+Jenkinsfile
+
+in the root of your GitHub repository.
+
+Pipeline Script — SMTP NOT configured
+
+Since you may not have Jenkins email/SMTP configured, use this version first:
+
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'python -m py_compile app.py'
+
+                echo 'Build completed. Waiting 15 seconds...'
+
+                sleep time: 15, unit: 'SECONDS'
+
+                milestone 1
+            }
+        }
+
+        stage('Send Notification') {
+            steps {
+                echo "To: your-email@example.com"
+                echo "Subject: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}"
+                echo "Build URL: ${env.BUILD_URL}"
+                echo "Notification sent successfully."
+            }
+        }
+    }
+}
+If SMTP/email is configured
+
+Replace the Send Notification stage with:
+
+stage('Send Notification') {
+    steps {
+        mail(
+            to: 'your-email@example.com',
+            subject: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+            body: "Build completed.\nBuild URL: ${env.BUILD_URL}"
+        )
+    }
+}
+
+Replace:
+
+your-email@example.com
