@@ -1,0 +1,65 @@
+app.py
+course_name = "Agile Development Process and DevOps"
+student_count = 60
+
+with open("build_report.txt", "w") as file:
+    file.write("Course Name: " + course_name + "\n")
+    file.write("Students Enrolled: " + str(student_count) + "\n")
+
+print("Report generated successfully")
+Jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/shivendra534/your-repository.git'
+            }
+        }
+
+        stage('Generate Report') {
+            steps {
+                bat 'echo BUILD_NUMBER=%BUILD_NUMBER%'
+                bat 'echo JOB_NAME=%JOB_NAME%'
+                bat 'echo WORKSPACE=%WORKSPACE%'
+
+                bat 'python app.py'
+            }
+        }
+
+        stage('Archive Report') {
+            steps {
+                archiveArtifacts artifacts: 'build_report.txt',
+                              fingerprint: true
+            }
+        }
+    }
+}
+Build 1
+
+Suppose:
+
+Students Enrolled: 60
+
+Jenkins archives:
+
+build_report.txt
+
+under Build 1.
+
+Then change:
+
+student_count = 70
+
+and run Build 2.
+
+Build 2 contains:
+
+Students Enrolled: 70
+
+Therefore:
+
+Build 1 → 60 students
+Build 2 → 70 students
