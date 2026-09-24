@@ -1,0 +1,65 @@
+#app.py
+def square(n):
+    return n * n
+
+
+def is_even(n):
+    return n % 2 == 0
+
+
+#test_app.py
+
+from app import square, is_even
+
+
+def test_square():
+    assert square(5) == 25
+    assert square(3) == 9
+
+
+def test_is_even():
+    assert is_even(4) is True
+    assert is_even(5) is False
+    
+
+#requirements.txt
+pytest
+
+#Jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/shivendra534/your-repository.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                bat 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                bat 'pytest'
+            }
+        }
+    }
+}
+
+#Expected result
+4 passed
+
+#If is_even() is changed incorrectly:
+def is_even(n):
+    return n % 2 != 0
+
+then the test stage fails.
+
+The pipeline stops at:
+
+Run Unit Tests
