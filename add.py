@@ -11,3 +11,12 @@ if __name__ == "__main__":
  print(f"First Number : {num1}")
  print(f"Second Number: {num2}")
  print(f"Sum : {result}")
+
+git init
+git config --global user.name "Sidak Singh"
+git config --global user.email "YOUR_GITHUB_EMAIL"
+git remote add origin https://github.com/YOUR_USERNAME/JenkinsLab.git
+git add .
+git commit -m "Add Jenkins pipeline"
+git branch -M main
+git push -u origin main
