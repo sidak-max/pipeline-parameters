@@ -1,0 +1,87 @@
+The pipeline has:
+
+Checkout
+Build
+Deploy
+
+Build waits 20 seconds and then executes:
+
+milestone(1)
+
+Deploy starts with:
+
+milestone(2)
+
+The question asks what happens when Build Now is clicked twice quickly.
+
+app.py
+print("Deployment completed successfully")
+Jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/shivendra534/your-repository.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'python -m py_compile app.py'
+
+                sleep(time: 20, unit: 'SECONDS')
+
+                milestone(1)
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                milestone(2)
+
+                bat 'python app.py'
+            }
+        }
+    }
+}
+What happens?
+
+Suppose:
+
+Build #1 starts
+Build #2 starts shortly after
+
+Both builds enter the Build stage.
+
+The newer build reaches the later milestone first.
+
+The milestone mechanism prevents an older build from proceeding past a milestone when a newer build has already passed that milestone.
+
+Therefore, the older overlapping build can be aborted at the milestone, while the newer build continues.
+
+Why milestone(1)?
+milestone(1)
+
+prevents an outdated build from continuing into later pipeline work after a newer build has progressed beyond that point.
+
+Why milestone(2)?
+stage('Deploy') {
+    steps {
+        milestone(2)
+        ...
+    }
+}
+
+This gives additional protection at the entrance to Deploy.
+
+It helps prevent an older build from reaching deployment after a newer build has already passed that deployment milestone.
+
+Without milestones
+
+If both builds were allowed to deploy:
+
+Build #1 → Deploy
+Build #2 → Deploy
