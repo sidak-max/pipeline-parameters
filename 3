@@ -1,0 +1,65 @@
+app.py
+print("Application deployed successfully")
+Jenkinsfile
+pipeline {
+    agent any
+
+    parameters {
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['dev', 'staging', 'prod'],
+            description: 'Select deployment environment'
+        )
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/shivendra534/your-repository.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'python -m py_compile app.py'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+
+                input(
+                    message: "Approve deployment to ${ENVIRONMENT}?",
+                    ok: 'Go'
+                )
+
+                bat 'python app.py'
+            }
+        }
+    }
+}
+Run 1
+
+Select:
+
+ENVIRONMENT = staging
+
+Click:
+
+Go
+
+Result:
+
+Application deployed successfully
+Run 2
+
+Select:
+
+ENVIRONMENT = prod
+
+At the approval screen click:
+
+Abort
+
+The deployment does not continue.
